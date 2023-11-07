@@ -33,7 +33,7 @@ class CarlaEnv(gym.Env):
         self.episode_start = None
 
         self.setup_sensors_and_actors()
-        self._generate_obstacles_ahead(15)
+        self._generate_obstacles_ahead(10)
 
 
     def setup_sensors_and_actors(self):
@@ -163,16 +163,17 @@ class CarlaEnv(gym.Env):
         if self.vehicle:
             self.vehicle.destroy()
 
-        # destroy all other vehicle actors
-        actor_list = self.world.get_actors()
-        agents = actor_list.filter('vehicle.*')
+        # # destroy all other vehicle actors
+        # actor_list = self.world.get_actors()
+        # agents = actor_list.filter('vehicle.*')
 
-        for agent in agents:
-            if agent.id != self.vehicle.id:
-                print(f"Destroying agent: {agent.id}")
-                agent.destroy()
+        # for agent in agents:
+        #     if agent.id != self.vehicle.id:
+        #         print(f"Destroying agent: {agent.id}")
+        #         agent.destroy()
 
         # destroy obstacles
         for obstacle in self.obstacles:
+            # print(f"Destroying obstacle: {obstacle.id}")
             obstacle.destroy()
         

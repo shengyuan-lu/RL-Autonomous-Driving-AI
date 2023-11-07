@@ -15,3 +15,10 @@ print(dataset['observations'][:5])
 print(dataset['actions'][:5])
 print(dataset['rewards'][:5])
 print(dataset['dones'][:5])
+
+# show camera images
+for obs in dataset['observations']:
+    display_image = cv2.resize(obs, None, fx=1, fy=1)
+
+    cv2.imshow("camera", display_image)
+    cv2.waitKey(1)

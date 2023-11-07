@@ -7,7 +7,7 @@ from carla_env.carla_env import CarlaEnv
 
 env = CarlaEnv()
 
-env = DataCollector(env, steps=200, save_dir='./output')
+env = DataCollector(env, steps=1000, save_dir='./output')
 
 env.reset()
 done = False
@@ -23,8 +23,6 @@ try:
 
             cv2.imshow("camera", display_image)
             cv2.waitKey(1)
-
-    print(env._load_dataset(load_dir='./output/dataset_111.pkl'))
     
 finally:
     env.close()
