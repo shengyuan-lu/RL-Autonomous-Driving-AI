@@ -8,4 +8,4 @@ Install the necessary packages by running the following command: `pip install -r
 
 ### Step 3: Get Collected Data
 
-Download [output][https://drive.google.com/drive/folders/1yo-TOPteNfjXpcdufjU_aHqPtrb5s6hH?usp=drive_link] and place it in the same folder where the reinforcement learning files are located
+Download [output](https://drive.google.com/drive/folders/1yo-TOPteNfjXpcdufjU_aHqPtrb5s6hH?usp=drive_link) and place it in the same folder where the reinforcement learning files are located
