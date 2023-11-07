@@ -39,7 +39,7 @@ class CarlaEnv(gym.Env):
     def setup_sensors_and_actors(self):
         if not self.vehicle:
             vehicle_bp = self.world.get_blueprint_library().find('vehicle.tesla.cybertruck')  # get specific vehicle
-            self.spawn_point = self.world.get_map().get_spawn_points()[1]
+            self.spawn_point = self.world.get_map().get_spawn_points()[0]
             self.vehicle = self.world.spawn_actor(vehicle_bp, self.spawn_point)
         
         # Setup sensors
