@@ -8,7 +8,7 @@ from carla_env.carla_env import CarlaEnv
 
 env = DataCollector(env=None)
 
-dataset = env._load_dataset(load_dir='./output/dataset_111.pkl')
+dataset = env._load_dataset(load_dir='./output/dataset_377.pkl')
 
 # print the first 5 data
 print(dataset['observations'][:5])
