@@ -20,7 +20,7 @@ try:
             if observation is not None and observation.size != 0:
                 display_image = cv2.resize(observation, None, fx=1, fy=1)
 
-                cv2.imshow("camera", display_image)
+                cv2.imshow("camera", observation)
                 cv2.waitKey(1)
 
             total_reward += reward
