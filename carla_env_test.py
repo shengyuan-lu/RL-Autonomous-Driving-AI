@@ -1,28 +1,31 @@
 import gym
 import cv2
-from carla_env.carla_env import CarlaEnv
+import time
+from carla_env.carla_env_multi_obs import CarlaEnv
+from utils.clean_actors import clean_actors
+
+clean_actors()
 
 env = CarlaEnv()
 
-num_episodes = 5
+num_episodes = 20
 
 try:
     for episode in range(num_episodes):
-        observation = env.reset()
+        obs = env.reset()
         done = False
         total_reward = 0
 
         while not done:
             action = env.action_space.sample()
 
-            observation, reward, done, info = env.step(action)
+            obs, reward, done, info = env.step(action)
+            
+            # # # test output
+            # print(obs['camera'])
+            # print(obs['telemetry'])  # relative position, relative velocity, speed 
 
-            if observation is not None and observation.size != 0:
-                display_image = cv2.resize(observation, None, fx=1, fy=1)
-
-                cv2.imshow("camera", observation)
-                cv2.waitKey(1)
-
+            env.render(mode='human')
             total_reward += reward
 
 

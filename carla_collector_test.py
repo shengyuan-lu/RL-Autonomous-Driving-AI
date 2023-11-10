@@ -15,14 +15,8 @@ done = False
 try:
     while not done:
         action = env.action_space.sample()
-
         observation, reward, done, info = env.step(action)
-
-        if observation is not None and observation.size != 0:
-            display_image = cv2.resize(observation, None, fx=1, fy=1)
-
-            cv2.imshow("camera", display_image)
-            cv2.waitKey(1)
+        env.render(mode='human')
     
 finally:
     env.close()
