@@ -69,7 +69,7 @@ class CarlaEnv(gym.Env):
         # observation space contains both camera image and telemetry data
         self.observation_space = gym.spaces.Dict({
             'camera': camera_image_space,
-            'telemetry': telemtry_space
+            'telemetry': telemtry_space,
         })
 
         # FIXME: currently set brake to 0.0 so vehicle does not stop initially

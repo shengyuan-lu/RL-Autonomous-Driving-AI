@@ -1,5 +1,6 @@
 
 import gym
+import carla
 import cv2
 import os
 import torch
@@ -14,8 +15,17 @@ from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from carla_env.carla_env_multi_obs import CarlaEnv
 from utils.clean_actors import clean_actors
 
+# connect to simulator
+client = carla.Client('localhost', 2000)
+client.set_timeout(10.0)
+
+# initialize world
+world = client.get_world()
+client.load_world('Town05')
+
 # init carla environment
 clean_actors()
+
 
 # both fully connected and convolutional neural network 
 # to handle telemetry data and camera images
@@ -73,16 +83,14 @@ policy_kwargs = dict(
 
 
 
-def train_exist_model(model_path, tb_log_name, total_timesteps=100000):
+def train_exist_model(model_path, total_timesteps=100000):
     env = lambda: CarlaEnv()
     env = DummyVecEnv([env])
     
     log_path = os.path.join('./Training/Logs')
 
     # extract the base model name from the model_path
-    model_name = os.path.basename(model_path)
-    if model_name.endswith('.zip'):
-        model_name = model_name[:-4]  # remove the .zip extension
+    model_name = os.path.basename(os.path.dirname(model_path))
 
     ppo_path = os.path.join('./Training/Saved_Models', model_name)
 
@@ -92,7 +100,7 @@ def train_exist_model(model_path, tb_log_name, total_timesteps=100000):
                                 n_eval_episodes=8,
                                 eval_freq=5000,verbose=1,
                                 deterministic=True, render=False)
-    model.learn(total_timesteps=total_timesteps, tb_log_name=tb_log_name, callback=eval_callback, reset_num_timesteps=False)
+    model.learn(total_timesteps=total_timesteps, tb_log_name=model_name, callback=eval_callback, reset_num_timesteps=False)
     model.save(ppo_path)
 
 def train_new_model(model_name, total_timesteps=100000):
@@ -126,8 +134,9 @@ def eval_model(model_path):
         env.render(mode='human')
 
 if __name__ == '__main__':
-    #model_path = os.path.join('./Training/Saved_Models/PPO_2m_Model_final.zip')
-    train_new_model("PPO_highway", total_timesteps=100000)
+    model_path = os.path.join('./Training/Saved_Models/PPO_highway_best/best_model')
+    # train_new_model("PPO_highway", total_timesteps=100000)
+    train_exist_model(model_path, total_timesteps=100000)
 
 
 
