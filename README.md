@@ -6,4 +6,4 @@ Download [Carla version 0.9.14](https://github.com/carla-simulator/carla/release
 
 Install the necessary packages by running the following command: `pip install -r requirements.txt`
 
-### Step 3: Go to multi_obs_env for the updated environment
+### Step 3: Go to multi_obs_env branch for the updated environment
