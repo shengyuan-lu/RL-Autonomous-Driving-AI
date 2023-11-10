@@ -7,7 +7,6 @@ import cv2
 import numpy as np
 from carla import Client
 from carla import VehicleControl
-from carla_env.carla_sync_mode import CarlaSyncMode
 #from leaderboard.autoagents.detour_agents.my_detour_agent import DetourAgent
 from agents.navigation.basic_agent import BasicAgent
 
