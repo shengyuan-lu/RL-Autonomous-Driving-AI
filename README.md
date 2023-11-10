@@ -6,6 +6,4 @@ Download [Carla version 0.9.14](https://github.com/carla-simulator/carla/release
 
 Install the necessary packages by running the following command: `pip install -r requirements.txt`
 
-### Step 3: Get Collected Data
-
-Download [output](https://drive.google.com/drive/folders/1yo-TOPteNfjXpcdufjU_aHqPtrb5s6hH?usp=drive_link) and place it in the same folder with Carla
+### Step 3: Go to multi_obs_env for the updated environment
