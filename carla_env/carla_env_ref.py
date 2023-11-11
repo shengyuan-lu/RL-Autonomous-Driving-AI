@@ -10,7 +10,7 @@ import numpy as np
 
 from gym import spaces
 from carla_env.carla_sync_mode import CarlaSyncMode
-from agents.navigation.basic_agent import BasicAgent
+from agents.template_agents.basic_agent import BasicAgent
 
 try:
     sys.path.append(glob.glob('../carla/dist/carla-*%d.%d-%s.egg' % (

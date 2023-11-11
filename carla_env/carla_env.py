@@ -1,14 +1,12 @@
 import gym
 import carla
-import time
 import math
-import random
 import cv2
+
 import numpy as np
+
 from carla import Client
-from carla import VehicleControl
-#from leaderboard.autoagents.detour_agents.my_detour_agent import DetourAgent
-from agents.navigation.basic_agent import BasicAgent
+from agents.template_agents.basic_agent import BasicAgent
 
 class CarlaEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -347,9 +345,9 @@ class CarlaEnv(gym.Env):
 
         # # destroy all other vehicle actors
         # actor_list = self.world.get_actors()
-        # agents = actor_list.filter('vehicle.*')
+        # our_agents = actor_list.filter('vehicle.*')
 
-        # for agent in agents:
+        # for agent in our_agents:
         #     if agent.id != self.vehicle.id:
         #         print(f"Destroying agent: {agent.id}")
         #         agent.destroy()

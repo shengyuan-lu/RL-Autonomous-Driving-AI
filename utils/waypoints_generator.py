@@ -4,7 +4,7 @@ from pygame.locals import *
 import json
 import csv
 
-from util.actor_movement_recorder import MovementRecorder
+from utils.actor_movement_recorder import MovementRecorder
 
 
 # connect to simulator

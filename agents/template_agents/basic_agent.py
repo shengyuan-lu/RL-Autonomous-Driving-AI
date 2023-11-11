@@ -10,11 +10,10 @@ It can also make use of the global route planner to follow a specifed route
 """
 
 import carla
-from enum import Enum
 from shapely.geometry import Polygon
 
-from leaderboard.autoagents.detour_agents.local_planner import LocalPlanner
-from leaderboard.autoagents.detour_agents.global_route_planner import GlobalRoutePlanner
+from agents.tools.local_planner import LocalPlanner
+from agents.tools.global_route_planner import GlobalRoutePlanner
 from agents.tools.misc import get_speed, is_within_distance, get_trafficlight_trigger_location, compute_distance
 
 
@@ -50,12 +49,8 @@ class BasicAgent(object):
         self._base_vehicle_threshold = 5.0  # meters
         self._max_brake = 0.5
 
-        # For detour
-        self._detoured = False
-
         # Change parameters according to the dictionary
-        if 'target_speed' in opt_dict:
-            self._target_speed = opt_dict['target_speed']
+        opt_dict['target_speed'] = target_speed
         if 'ignore_traffic_lights' in opt_dict:
             self._ignore_traffic_lights = opt_dict['ignore_traffic_lights']
         if 'ignore_stop_signs' in opt_dict:
@@ -172,8 +167,8 @@ class BasicAgent(object):
         # Check for possible vehicle obstacles
         max_vehicle_distance = self._base_vehicle_threshold + vehicle_speed
         affected_by_vehicle, _, _ = self._vehicle_obstacle_detected(vehicle_list, max_vehicle_distance)
-        # if affected_by_vehicle:
-        #     hazard_detected = True
+        if affected_by_vehicle:
+            hazard_detected = True
 
         # Check if the vehicle is affected by a red traffic light
         max_tlight_distance = self._base_tlight_threshold + vehicle_speed
@@ -181,17 +176,9 @@ class BasicAgent(object):
         if affected_by_tlight:
             hazard_detected = True
 
-        # if detected vehicle, try to detour
-        # need a flag to detour at the first time
-        if affected_by_vehicle and not self._detoured:
-            self._detoured = True
-            self._local_planner.add_detour_wp(k=10)
-        elif not affected_by_vehicle:
-            self._detoured = False
         control = self._local_planner.run_step()
         if hazard_detected:
             control = self.add_emergency_stop(control)
-
 
         return control
 

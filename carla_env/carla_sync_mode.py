@@ -1,4 +1,5 @@
 import queue
+import carla
 
 class CarlaSyncMode(object):
     """

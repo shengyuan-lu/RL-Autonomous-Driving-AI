@@ -6,8 +6,7 @@ import cv2
 import numpy as np
 from carla import Client
 
-from agents.navigation.behavior_agent import BehaviorAgent
-
+from agents.template_agents.behavior_agent import BehaviorAgent
 
 class CarlaEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -319,9 +318,9 @@ class CarlaEnv(gym.Env):
 
         # # destroy all other vehicle actors
         # actor_list = self.world.get_actors()
-        # agents = actor_list.filter('vehicle.*')
+        # our_agents = actor_list.filter('vehicle.*')
 
-        # for agent in agents:
+        # for agent in our_agents:
         #     if agent.id != self.vehicle.id:
         #         print(f"Destroying agent: {agent.id}")
         #         agent.destroy()

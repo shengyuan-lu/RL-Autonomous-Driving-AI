@@ -44,7 +44,7 @@ Temporary Items
 *.sublime-project
 *.sublime-workspace
 
-logs/
+training/training_logs/
 
 .ipynb_checkpoints
 ghostdriver.log
@@ -100,7 +100,7 @@ MANIFEST
 *.manifest
 *.spec
 
-# Installer logs
+# Installer training_logs
 pip-log.txt
 pip-delete-this-directory.txt
 
