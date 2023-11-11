@@ -30,7 +30,7 @@ class CarlaEnv(gym.Env):
         self.observation_space = None
 
         self.learning_vehicle = None  # learning agent
-        self.privilege_vehicle = None  # priviledge agent
+        self.privilege_vehicle = None  # privileged agent
         self.privilege_agent = None
         self.collision_sensor = None
         self.camera_sensor = None

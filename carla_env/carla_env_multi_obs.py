@@ -1,16 +1,13 @@
 import gym
 import carla
-import time
-import math
+
 import random
 import cv2
 import numpy as np
 from carla import Client
-from carla import VehicleControl
-from carla_env.carla_sync_mode import CarlaSyncMode
-#from leaderboard.autoagents.detour_agents.my_detour_agent import DetourAgent
-from agents.navigation.basic_agent import BasicAgent
+
 from agents.navigation.behavior_agent import BehaviorAgent
+
 
 class CarlaEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -50,17 +47,17 @@ class CarlaEnv(gym.Env):
         self._init_traffic_manager()  # initialize traffic manager
         self._setup_sensors_and_actors()
 
-
     def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
         return [seed]
-    
+
     def _init_traffic_manager(self):
         self.traffic_manager = self.client.get_trafficmanager()
         self.traffic_manager.set_synchronous_mode(True)
-    
+
     def _init_observation_action_space(self):
-        camera_image_space = gym.spaces.Box(low=0, high=255, shape=(self.CAMERA_WIDTH, self.CAMERA_HEIGHT, 3), dtype=np.uint8)
+        camera_image_space = gym.spaces.Box(low=0, high=255, shape=(self.CAMERA_WIDTH, self.CAMERA_HEIGHT, 3),
+                                            dtype=np.uint8)
         telemetry_low = np.array([-np.inf, -np.inf, -np.inf, -np.inf, 0])  # relative position, relative velocity, speed
         telemetry_high = np.array([np.inf, np.inf, np.inf, np.inf, np.inf])
 
@@ -73,8 +70,8 @@ class CarlaEnv(gym.Env):
         })
 
         # FIXME: currently set brake to 0.0 so vehicle does not stop initially
-        self.action_space = gym.spaces.Box(low=np.array([-1.0, -1.0, 0.0]), high=np.array([1.0, 1.0, 1.0], dtype=np.float32))  # throttle, steer, brake
-    
+        self.action_space = gym.spaces.Box(low=np.array([-1.0, -1.0, 0.0]),
+                                           high=np.array([1.0, 1.0, 1.0], dtype=np.float32))  # throttle, steer, brake
 
     def _setup_sensors_and_actors(self):
         # setup privilege agent to start location
@@ -91,19 +88,21 @@ class CarlaEnv(gym.Env):
             spawn_points = self.world.get_map().get_spawn_points()
             destination = random.choice(spawn_points).location
             self.privilege_agent.set_destination(destination)
-        
+
         # setup learning agent
         if not self.learning_vehicle:
             vehicle_bp = self.world.get_blueprint_library().find('vehicle.tesla.cybertruck')  # get specific vehicle
             self.spawn_point = carla.Transform(
-                                carla.Location(self.PRIVILEGE_START_LOC.x + self.INIT_DIST_BETWEEN_VEHICLES, self.PRIVILEGE_START_LOC.y, self.PRIVILEGE_START_LOC.z),
-                                carla.Rotation(yaw=180.0))
+                carla.Location(self.PRIVILEGE_START_LOC.x + self.INIT_DIST_BETWEEN_VEHICLES, self.PRIVILEGE_START_LOC.y,
+                               self.PRIVILEGE_START_LOC.z),
+                carla.Rotation(yaw=180.0))
             self.learning_vehicle = self.world.spawn_actor(vehicle_bp, self.spawn_point)
-        
+
         # Setup sensors
         if not self.collision_sensor:
             collision_bp = self.world.get_blueprint_library().find('sensor.other.collision')
-            self.collision_sensor = self.world.spawn_actor(collision_bp, carla.Transform(), attach_to=self.learning_vehicle)
+            self.collision_sensor = self.world.spawn_actor(collision_bp, carla.Transform(),
+                                                           attach_to=self.learning_vehicle)
             self.collision_sensor.listen(lambda event: self._on_collision(event))
 
         if not self.camera_sensor:
@@ -111,21 +110,23 @@ class CarlaEnv(gym.Env):
             camera_bp.set_attribute('image_size_x', str(self.CAMERA_WIDTH))
             camera_bp.set_attribute('image_size_y', str(self.CAMERA_HEIGHT))
             camera_bp.set_attribute('fov', str(self.FOV))
-            self.camera_sensor = self.world.spawn_actor(camera_bp, 
-                                                        carla.Transform(carla.Location(x=3.0, z=10.0), carla.Rotation(pitch=-90)),
+            self.camera_sensor = self.world.spawn_actor(camera_bp,
+                                                        carla.Transform(carla.Location(x=3.0, z=10.0),
+                                                                        carla.Rotation(pitch=-90)),
                                                         attach_to=self.learning_vehicle)
             self.camera_sensor.listen(lambda data: self.process_image(data))
-        
+
         if not self.lane_invasion_sensor:
             lane_invasion_bp = self.world.get_blueprint_library().find('sensor.other.lane_invasion')
-            self.lane_invasion_sensor = self.world.spawn_actor(lane_invasion_bp, carla.Transform(), attach_to=self.learning_vehicle)
+            self.lane_invasion_sensor = self.world.spawn_actor(lane_invasion_bp, carla.Transform(),
+                                                               attach_to=self.learning_vehicle)
             self.lane_invasion_sensor.listen(lambda event: self._on_lane_invasion(event))
 
     def process_image(self, img):
         img.convert(carla.ColorConverter.CityScapesPalette)  # convert to raw data
         bgra = np.array(img.raw_data).reshape((self.CAMERA_WIDTH, self.CAMERA_HEIGHT, 4))
         bgr = bgra[:, :, :3]
-        
+
         ROAD_COLOR_BGR = [128, 64, 128]
         VEHICLE_COLOR_BGR = [142, 0, 0]
         ROAD_LINE_COLOR_BGR = [50, 234, 157]
@@ -140,13 +141,13 @@ class CarlaEnv(gym.Env):
         processed_img[combined_mask] = bgr[combined_mask]
 
         self.camera_data = processed_img
-    
+
     def _on_collision(self, event):
         self.collision_data = event
-    
+
     def _on_lane_invasion(self, event):
         self.lane_invasion_data = event
-    
+
     def _is_same_lane(self, vehicle1, vehicle2):
         waypoint1 = self.world.get_map().get_waypoint(vehicle1.get_location())
         waypoint2 = self.world.get_map().get_waypoint(vehicle2.get_location())
@@ -167,12 +168,11 @@ class CarlaEnv(gym.Env):
         learning_vehicle_velocity = self.learning_vehicle.get_velocity()
 
         relative_pos = np.array([privilege_vehicle_transform.location.x - learning_vehicle_transform.location.x,
-                                privilege_vehicle_transform.location.y - learning_vehicle_transform.location.y])
-        
+                                 privilege_vehicle_transform.location.y - learning_vehicle_transform.location.y])
+
         relative_vel = np.array([privilege_vehicle_velocity.x - learning_vehicle_velocity.x,
-                                privilege_vehicle_velocity.y - learning_vehicle_velocity.y])
-        
-        
+                                 privilege_vehicle_velocity.y - learning_vehicle_velocity.y])
+
         speed = np.sqrt(np.square(learning_vehicle_velocity.x) + np.square(learning_vehicle_velocity.y))
 
         observation = {
@@ -210,7 +210,7 @@ class CarlaEnv(gym.Env):
 
         obs = self.get_observation()
         return obs  # return initial observation
-    
+
     def step(self, action):
         # step priviledge agent
         control = self.privilege_agent.run_step()
@@ -221,25 +221,23 @@ class CarlaEnv(gym.Env):
         control = carla.VehicleControl(throttle=float(throttle), steer=float(steer), brake=float(brake))
         self.learning_vehicle.apply_control(control)
 
-
         self.world.tick()
 
         done = False
         reward = 0.0
 
-        ## define rewards
-        
+        # define rewards
 
         # calculate distance between privilege and learning vehicles
         privilege_vehicle_transform = self.privilege_vehicle.get_transform()
         learning_vehicle_transform = self.learning_vehicle.get_transform()
         distance = np.sqrt((privilege_vehicle_transform.location.x - learning_vehicle_transform.location.x) ** 2 +
-                            (privilege_vehicle_transform.location.y - learning_vehicle_transform.location.y) ** 2)
+                           (privilege_vehicle_transform.location.y - learning_vehicle_transform.location.y) ** 2)
 
         # assign reward/penalty based on distance
-        if distance >= 2 and distance <= 10:
+        if 2 <= distance <= 10:
             reward += 1.0
-        elif distance > 10 and distance <= 15:
+        elif 10 < distance <= 15:
             reward += 0.5
 
         # reward for being in the same lane
@@ -255,23 +253,33 @@ class CarlaEnv(gym.Env):
         # speed penalty when greater than previlege vehicle
         privilege_vehicle_velocity = self.privilege_vehicle.get_velocity()
         learning_vehicle_velocity = self.learning_vehicle.get_velocity()
-        privilege_vehicle_speed = np.sqrt(np.square(privilege_vehicle_velocity.x) + np.square(privilege_vehicle_velocity.y))
-        learning_vehicle_speed = np.sqrt(np.square(learning_vehicle_velocity.x) + np.square(learning_vehicle_velocity.y))
+        privilege_vehicle_speed = np.sqrt(
+            np.square(privilege_vehicle_velocity.x) + np.square(privilege_vehicle_velocity.y))
+        learning_vehicle_speed = np.sqrt(
+            np.square(learning_vehicle_velocity.x) + np.square(learning_vehicle_velocity.y))
         if learning_vehicle_speed > privilege_vehicle_speed:
             reward -= 1.0
         else:
             reward += 1.0
 
-
         # lane invasion penalty
         if self.lane_invasion_data:
             reward -= 1.0
+
+        # Maintain position near the center of the current lane
+        learning_vehicle_location = learning_vehicle_transform.location
+        current_waypoint = self.world.get_map().get_waypoint(learning_vehicle_location)
+        lane_width = current_waypoint.lane_width
+        current_lane_center = current_waypoint.transform.location
+        current_lane_center.x += lane_width / 2
+        lateral_deviation = abs(learning_vehicle_transform.location.y - current_lane_center.y)
+        reward += 1.0 / (lateral_deviation + 1)
 
         # done once collision occurs
         if self.collision_data or distance > 15 or distance < 2:
             done = True
             reward = -200.0
-        
+
         # done if timeout
         if self.world.get_snapshot().timestamp.elapsed_seconds - self.episode_start > 100:
             print("Time out")
@@ -291,13 +299,12 @@ class CarlaEnv(gym.Env):
 
         return obs, reward, done, info
 
-
     def render(self, mode='human'):
         if mode == 'human':
             img = self.camera_data
             cv2.imshow('Camera', img)
             cv2.waitKey(1)
-        
+
     def close(self):
         if self.camera_sensor:
             self.camera_sensor.destroy()
@@ -309,7 +316,6 @@ class CarlaEnv(gym.Env):
             self.lane_invasion_sensor.destroy()
         if self.learning_vehicle:
             self.learning_vehicle.destroy()
-        
 
         # # destroy all other vehicle actors
         # actor_list = self.world.get_actors()
@@ -324,4 +330,3 @@ class CarlaEnv(gym.Env):
         for obstacle in self.obstacles:
             # print(f"Destroying obstacle: {obstacle.id}")
             obstacle.destroy()
-        

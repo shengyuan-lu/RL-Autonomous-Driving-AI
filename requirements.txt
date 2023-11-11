@@ -1,5 +1,13 @@
-carla
+carla~=0.9.14
 stable_baselines3 sb3_contrib
 shimmy
-gym
+gym~=0.26.2
 cv2
+pygame~=2.5.2
+numpy~=1.24.4
+shapely~=2.0.2
+leaderboard~=3.7.3
+networkx~=3.1
+torch~=2.1.0
+opencv-python~=4.8.1.78
+gymnasium~=0.29.1

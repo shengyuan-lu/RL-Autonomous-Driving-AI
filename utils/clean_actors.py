@@ -1,7 +1,9 @@
-import carla
 from carla import Client
 
 def clean_actors():
+    """
+    Clean vehicle and obstacles in the simulation
+    """
     client = Client('localhost', 2000)
     client.set_timeout(10.0)
     world = client.get_world()
