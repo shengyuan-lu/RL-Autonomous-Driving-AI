@@ -143,7 +143,7 @@ if __name__ == '__main__':
 
     clean_actors()
 
-    trainer = ModelTrainer(new_model_name='PPO_highway', exist_model_name='PPO_highway_1', total_timesteps=1000)
+    trainer = ModelTrainer(new_model_name='PPO_highway', exist_model_name='PPO_highway_1', total_timesteps=100000)
 
     trainer.train_model(train_new=False)
 
