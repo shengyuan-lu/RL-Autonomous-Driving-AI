@@ -122,7 +122,7 @@ class ModelTrainer:
             model.learn(total_timesteps=self.total_timesteps, tb_log_name=self.new_model_name, callback=eval_callback,
                         reset_num_timesteps=False)
 
-            model.save(self.new_model_name)
+            model.save(self.new_model_path)
 
         else:
             print(f"There's no existing model {self.exist_model_name}")
