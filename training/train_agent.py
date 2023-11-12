@@ -152,7 +152,7 @@ if __name__ == '__main__':
                            exist_model_name='PPO_highway_1',
                            train_new_model_hyperparam={},
                            train_exist_model_hyperparam=hyperparams,
-                           total_timesteps=1000000)
+                           total_timesteps=100000)
 
     trainer.train_model(train_new=False)
 
