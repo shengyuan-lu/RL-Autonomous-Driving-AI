@@ -144,10 +144,14 @@ if __name__ == '__main__':
 
     clean_actors()
 
+    hyperparams = {
+        'ent_coef': 0.01
+    }
+
     trainer = ModelTrainer(new_model_name='PPO_highway',
                            exist_model_name='PPO_highway_1',
-                           train_exist_model_hyperparam={},
                            train_new_model_hyperparam={},
+                           train_exist_model_hyperparam=hyperparams,
                            total_timesteps=1000)
 
     trainer.train_model(train_new=False)
