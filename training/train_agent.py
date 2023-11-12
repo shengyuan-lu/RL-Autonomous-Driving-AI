@@ -50,13 +50,13 @@ class ModelTrainer:
         while os.path.exists(f'{model_path_base}/{self.new_model_name}_{model_version}.zip'):
             model_version += 1
 
-        self.model_best_name = f'{self.new_model_name}_best.zip'
+        self.model_best_subdir_name = f'{self.new_model_name}_best'
 
         self.new_model_name = f'{self.new_model_name}_{model_version}'
 
         self.new_model_path = os.path.join('trained_models', self.new_model_name)
 
-        self.model_best_path = os.path.join('trained_models', self.model_best_name)
+        self.model_best_path = os.path.join('trained_models', self.model_best_subdir_name)
 
         self.exist_model_path = os.path.join('trained_models', f'{self.exist_model_name}')
 
