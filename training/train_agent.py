@@ -22,15 +22,16 @@ policy_kwargs = dict(
 
 class ModelTrainer:
 
-    def __init__(self, new_model_name, exist_model_name='', total_timesteps=100000):
+    def __init__(self, new_model_name, exist_model_name='', train_new_model_hyperparam={}, train_exist_model_hyperparam={}, total_timesteps=100000):
         self.new_model_name = new_model_name
         self.exist_model_name = exist_model_name + '.zip'
         self.total_timesteps = total_timesteps
 
+        self.train_new_model_hyperparam = train_new_model_hyperparam
+        self.train_exist_model_hyperparam = train_exist_model_hyperparam
+
         self.set_model_and_log_paths()
-
         self.connect_to_simulator()
-
 
 
     def set_model_and_log_paths(self):
@@ -84,7 +85,7 @@ class ModelTrainer:
         env = lambda: CarlaEnv()
         env = DummyVecEnv([env])
 
-        model = PPO('MultiInputPolicy', env, verbose=1, tensorboard_log=self.log_path)
+        model = PPO('MultiInputPolicy', env, verbose=1, tensorboard_log=self.log_path, **self.train_new_model_hyperparam)
 
         eval_env = model.get_env()
 
@@ -108,7 +109,7 @@ class ModelTrainer:
         if os.path.exists(self.exist_model_path):
 
             # load the model
-            model = PPO.load(self.exist_model_path, env=env, verbose=1, tensorboard_log=self.log_path)
+            model = PPO.load(self.exist_model_path, env=env, verbose=1, tensorboard_log=self.log_path, **self.train_exist_model_hyperparam)
 
             # evaluate the model
             eval_env = model.get_env()
@@ -135,7 +136,7 @@ class ModelTrainer:
 
         else:
             print(f"Training on existing model: {self.exist_model_name}")
-            print(f"Saving as a new model: {self.new_model_name}")
+            print(f"Will Be Saving as a new model: {self.new_model_name}")
             self.train_exist_model()
 
 
@@ -143,7 +144,11 @@ if __name__ == '__main__':
 
     clean_actors()
 
-    trainer = ModelTrainer(new_model_name='PPO_highway', exist_model_name='PPO_highway_1', total_timesteps=100000)
+    trainer = ModelTrainer(new_model_name='PPO_highway',
+                           exist_model_name='PPO_highway_1',
+                           train_exist_model_hyperparam={},
+                           train_new_model_hyperparam={},
+                           total_timesteps=1000)
 
     trainer.train_model(train_new=False)
 
