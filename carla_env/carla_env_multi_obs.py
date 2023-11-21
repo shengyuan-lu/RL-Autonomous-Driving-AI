@@ -217,6 +217,9 @@ class CarlaEnv(gym.Env):
 
         # step learning agent
         throttle, steer, brake = action  # action with two items
+        throttle_privilege = control.throttle
+        steer_privilege = control.steer
+        brake_privilege = control.brake
         control = carla.VehicleControl(throttle=float(throttle), steer=float(steer), brake=float(brake))
         self.learning_vehicle.apply_control(control)
 
@@ -226,6 +229,12 @@ class CarlaEnv(gym.Env):
         reward = 0.0
 
         # define rewards
+
+        # penalize for excessive difference between privileged/learning agent actions
+        throttle_penalty = 0.2 * abs(throttle - throttle_privilege)
+        steer_penalty = 0.5 * abs(steer - steer_privilege)
+        brake_penalty = 0.2 * abs(brake - brake_privilege)
+        reward -= throttle_penalty + steer_penalty + brake_penalty
 
         # calculate distance between privilege and learning vehicles
         privilege_vehicle_transform = self.privilege_vehicle.get_transform()
@@ -241,13 +250,13 @@ class CarlaEnv(gym.Env):
 
         # reward for being in the same lane
         if self._is_same_lane(self.privilege_vehicle, self.learning_vehicle):
-            reward += 1.0
+            reward += 5.0
         else:
-            reward -= 5.0
+            reward -= 10.0
 
         # steer penalty
         if abs(steer) > 0.5:
-            reward -= abs(steer) * 0.5
+            reward -= abs(steer) * 2.0
 
         # speed penalty when greater than previlege vehicle
         privilege_vehicle_velocity = self.privilege_vehicle.get_velocity()
@@ -263,7 +272,7 @@ class CarlaEnv(gym.Env):
 
         # lane invasion penalty
         if self.lane_invasion_data:
-            reward -= 1.0
+            reward -= 5.0
 
         # Maintain position near the center of the current lane
         learning_vehicle_location = learning_vehicle_transform.location
@@ -272,7 +281,7 @@ class CarlaEnv(gym.Env):
         current_lane_center = current_waypoint.transform.location
         current_lane_center.x += lane_width / 2
         lateral_deviation = abs(learning_vehicle_transform.location.y - current_lane_center.y)
-        reward += 1.0 / (lateral_deviation + 1)
+        reward += 2.0 / (lateral_deviation + 1)
 
         # done once collision occurs
         if self.collision_data or distance > 15 or distance < 2:
