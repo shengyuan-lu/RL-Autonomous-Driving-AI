@@ -63,7 +63,7 @@ class ModelEvaluator:
 if __name__ == '__main__':
     clean_actors()  # clean the environment
 
-    model_name = "PPO_highway_3" # doesn't need to include .zip
+    model_name = "PPO_highway_5" # doesn't need to include .zip
 
     evaluator = ModelEvaluator(model_name=model_name)
 
