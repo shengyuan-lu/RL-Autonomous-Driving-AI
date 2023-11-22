@@ -149,7 +149,7 @@ if __name__ == '__main__':
     }
 
     trainer = ModelTrainer(new_model_name='PPO_highway',
-                           exist_model_name='PPO_highway_2',
+                           exist_model_name='PPO_highway_3',
                            train_new_model_hyperparam={},
                            train_exist_model_hyperparam=hyperparams,
                            total_timesteps=100000)
