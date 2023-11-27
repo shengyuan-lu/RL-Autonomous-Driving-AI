@@ -148,11 +148,11 @@ if __name__ == '__main__':
         'ent_coef': 0.01
     }
 
-    trainer = ModelTrainer(new_model_name='PPO_highway_multispawn_1',
+    trainer = ModelTrainer(new_model_name='PPO_highway',
                            exist_model_name='best_model',
                            train_new_model_hyperparam={},
                            train_exist_model_hyperparam=hyperparams,
                            total_timesteps=100000)
 
-    trainer.train_model(train_new=False)
+    trainer.train_model(train_new=True)
 
