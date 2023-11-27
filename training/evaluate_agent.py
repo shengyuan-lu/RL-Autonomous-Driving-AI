@@ -1,11 +1,8 @@
 import os
-
 import carla
 from carla_env.carla_env_multi_obs import CarlaEnv
-
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv
-
 from utils.clean_actors import clean_actors
 
 class ModelEvaluator:
@@ -63,7 +60,7 @@ class ModelEvaluator:
 if __name__ == '__main__':
     clean_actors()  # clean the environment
 
-    model_name = "PPO_highway_1" # doesn't need to include .zip
+    model_name = "PPO_highway_4" # doesn't need to include .zip
 
     evaluator = ModelEvaluator(model_name=model_name)
 
